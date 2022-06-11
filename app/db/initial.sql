@@ -91,3 +91,11 @@ create table if not exists favourites
 	fav_id integer references users(id) on delete cascade,
 	unique(owner_id,fav_id)	
 );
+create table if not exists products
+(
+	id serial primary key,
+	name text not null,
+	description text,
+	image_url text,
+	price integer	
+);
