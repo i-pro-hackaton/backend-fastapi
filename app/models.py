@@ -34,6 +34,9 @@ class User(BaseModel):
 class Team(BaseModel):
     name: str = Field(..., title='Имя команды')
 
+class Tag(BaseModel):
+    name: str = Field(...,title='Название тега')
+
 class TaskID(BaseModel):
     id: int = Field(..., title='ID мероприятия')
 

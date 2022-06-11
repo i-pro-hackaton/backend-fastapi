@@ -8,7 +8,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 
 import app.queries.users as users_queries
 import app.queries.tags as tags_queries
-from app.models import SuccessfullResponse, TaskOut, TaskID, User
+from app.models import SuccessfullResponse, TaskOut, TaskID, User, Tag
 from app.auth.hash import get_password_hash, verify_password
 from app.auth.jwt_token import create_access_token
 from app.auth.oauth2 import get_current_user
@@ -29,6 +29,12 @@ async def remove_tag_from_tasks(tag: str, task_id: TaskID) -> SuccessfullRespons
     await tags_queries.remove_tag_from_tasks(tag,task_id.id)
     return SuccessfullResponse()
     
+
+@tags_router.get('/task/tag', response_model=list[Tag])
+async def get_tags_of_task(task_id: int = Query(..., title='ID мероприятия')) -> list[Tag]:
+    tags = await tags_queries.get_tags_of_task(task_id)
+    tags = format_records(tags, Tag)
+    return tags
 
 @tags_router.get("/task/search", response_model=list[TaskOut])
 async def search_tasks(tags: List[str] = Query(None, title='Теги'),

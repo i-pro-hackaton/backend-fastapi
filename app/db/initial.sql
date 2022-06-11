@@ -7,7 +7,8 @@ create table if not exists users
 	surname text not null,
 	date_of_birth timestamp not null,
 	email text not null,
-	phone text not null
+	phone text not null,
+	hours integer
 );
 create table if not exists teams
 (
@@ -74,17 +75,19 @@ create table if not exists companies
 create table if not exists skills
 (
 	id serial primary key,
-	name text	
+	name text unique
 );
 create table if not exists users_skills
 (
 	id serial primary key,
-	skill_id integer references skills(id),
-	user_id integer references users(id)	
+	skill_id integer references skills(id) on delete cascade,
+	user_id integer references users(id) on delete cascade,
+	unique(skill_id,user_id)
 );
 create table if not exists favourites
 (
 	id serial primary key,
-	owner_id integer references users(id),
-	fav_id integer references users(id)	
+	owner_id integer references users(id) on delete cascade,
+	fav_id integer references users(id) on delete cascade,
+	unique(owner_id,fav_id)	
 );

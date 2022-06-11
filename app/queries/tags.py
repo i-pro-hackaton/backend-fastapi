@@ -28,7 +28,7 @@ async def remove_tag_from_tasks(tag: str, task_id: int) -> None:
     tag_id = await DB.fetchval(sql, tag)
     if not tag_id:
         raise NotFoundException("Тэг не найден")
-    sql = """DELETE FROM
+    sql = """DELETE
              FROM tags_tasks
              WHERE tag_id = $1
                AND task_id = $2"""
@@ -46,17 +46,17 @@ async def search_tasks(tags: list, search_query: str) -> list[Record]:
                  FROM tasks
                  WHERE (to_tsvector(description) @@ to_tsquery($1)
                  OR to_tsvector(name) @@ to_tsquery($1))"""
-        tasks_ids = set(await DB.fetch(sql,prepared_query))
+        tasks_ids_search = set(await DB.fetch(sql,prepared_query))
     if tags:
         tag_ids = await get_multiple_tag_ids(tags)
         if tag_ids:
             sql = """WITH ids AS
                      (SELECT task_id, count(tag_id)
-                     FROM tag_id AS t
+                     FROM tags_tasks AS t
                      WHERE t.tag_id = ANY($1::int[])
-                     GROUP BY tag_id)
+                     GROUP BY task_id)
                      SELECT tasks.id
-                     FROM product
+                     FROM tasks
                      JOIN ids ON tasks.id = ids.task_id
                      WHERE ids.count = $2"""
             tasks_ids_tags = set(await DB.fetch(sql, tag_ids, len(tags)))
@@ -64,7 +64,7 @@ async def search_tasks(tags: list, search_query: str) -> list[Record]:
         tasks_ids_tags = tasks_ids_search
     if not search_query and tags:
         tasks_ids_search = tasks_ids_tags
-    tasks_ids = list(tasks_ids.intersection(tasks_ids_tags))
+    tasks_ids = list(tasks_ids_search.intersection(tasks_ids_tags))
     sql = """SELECT name, description, task_type,
                     image_url, company_id, owner_id,
                     start_date, end_date
@@ -72,8 +72,16 @@ async def search_tasks(tags: list, search_query: str) -> list[Record]:
              WHERE id = ANY($1::int[])"""
     return await DB.fetch(sql, tasks_ids)
 async def get_multiple_tag_ids(tag_names: list[str]) -> list[int]:
-    sql = """SELECT id,name
+    sql = """SELECT id
              FROM tags
              WHERE name = ANY($1::text[])"""
-    tag_ids = await DB.fetch(sql, tag_names)
+    tag_ids = list(map(lambda x: int(x['id']), await DB.fetch(sql, tag_names)))
     return tag_ids
+
+async def get_tags_of_task(task_id: int) -> list[Record]:
+    sql = """SELECT name
+             FROM tags as t
+             JOIN tags_tasks as tt 
+             ON t.id = tt.tag_id
+             WHERE tt.task_id = $1"""
+    return await DB.fetch(sql, task_id)
