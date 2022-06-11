@@ -36,27 +36,31 @@ create table if not exists tags_tasks
 (
 	id serial primary key,
 	tag_id integer references tags(id) on delete cascade,
-	task_id integer references tasks(id) on delete cascade
+	task_id integer references tasks(id) on delete cascade,
+	unique(tag_id, task_id)
 );
 create table if not exists teams_tasks
 (
 	id serial primary key,
 	team_id integer references teams(id) on delete cascade,
 	task_id integer references tasks(id) on delete cascade,
-	completed boolean
+	completed boolean,
+	unique(team_id, task_id)
 );
 create table if not exists users_tasks
 (
 	id serial primary key,
 	user_id integer references users(id) on delete cascade,
 	task_id integer references tasks(id) on delete cascade,
-	completed boolean
+	completed boolean,
+	unique(user_id, task_id)
 );
 create table if not exists users_teams
 (
 	id serial primary key,
 	user_id integer references users(id) on delete cascade,
-	team_id integer references teams(id) on delete cascade
+	team_id integer references teams(id) on delete cascade,
+	unique(user_id, team_id)
 );
 create table if not exists companies
 (

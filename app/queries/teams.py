@@ -11,13 +11,40 @@ async def add_team(name: str) -> None:
     except UniqueViolationError as e:
         raise BadRequest('Имя команды занято') from e
 
-async def get_teams_by_login(login: str) -> list[str]:
-    sql = """SELECT name
-             FROM teams AS t
-             JOIN users_teams AS ut
+async def connect_users_teams(login: str, name: str) -> None:
+    sql = """SELECT id
+             FROM users
+             WHERE login = $1"""
+    user_id = None
+    user_id = await DB.fetchval(sql, login)
+    if not user_id:
+        raise NotFoundException('Пользователь не найден')
+    sql = """SELECT id
+             FROM teams
+             WHERE name = $1"""
+    team_id = None
+    team_id = await DB.fetchval(sql, name)
+    if not team_id:
+        raise NotFoundException('Команда не найдена')
+    sql = """INSERT INTO users_teams(user_id, team_id)
+             VALUES ($1,$2)"""
+    try:
+        await DB.execute(sql, user_id, team_id)
+    except UniqueViolationError as e:
+        raise BadRequest('Пользователь уже принадлежит команде')
+
+async def get_teams_by_login(login: str) -> list[Record]:
+    sql = """SELECT id 
+             FROM users
+             WHERE login = $1"""
+    user_id = None
+    user_id = await DB.fetchval(sql,login)
+    if not user_id:
+        raise NotFoundException('Пользователь не найден')
+    sql = """SELECT t.name
+             FROM teams as t
+             JOIN users_teams as ut
              ON t.id = ut.team_id
-             JOIN users AS u
-             ON ut.user_id = u.id
-             WHERE u.login = $1"""
-    await DB.fetch(sql, login)
+             WHERE ut.user_id = $1"""
+    return await DB.fetch(sql, user_id)
 
