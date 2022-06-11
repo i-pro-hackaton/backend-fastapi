@@ -11,3 +11,6 @@ def format_record(raw_record: Record, model: Type[BaseModel]) -> BaseModel:
     if not raw_record:
         return None
     return model(**raw_record)
+
+def prepare_search_query(search_query: str) -> str:
+    return ':* & '.join(search_query.split()) + ':*'

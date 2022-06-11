@@ -10,6 +10,7 @@ from app.exceptions import CommonException, InternalServerError
 from app.routers.users import users_router
 from app.routers.teams import teams_router
 from app.routers.tasks import tasks_router
+from app.routers.tags import tags_router
 
 origins = ["*"] # TODO: change it in bright future
 app = FastAPI(title='Hackaton backend')
@@ -47,6 +48,7 @@ async def common_exception_handler(request: Request, exception: CommonException)
 app.include_router(users_router)
 app.include_router(teams_router)
 app.include_router(tasks_router)
+app.include_router(tags_router)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,

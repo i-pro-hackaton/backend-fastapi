@@ -36,7 +36,7 @@ async def add_user(name: str,
 
 
 async def get_user_profile(login: str) -> (str,str):
-    sql = """ SELECT id,name,surname,date_of_birth,email,phone
+    sql = """ SELECT id,name,login,surname,date_of_birth,email,phone
               FROM users
               WHERE login = $1"""
     try:
