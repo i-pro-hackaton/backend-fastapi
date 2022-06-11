@@ -52,10 +52,13 @@ async def update_user_data(user_update: User, login: str = Depends(get_current_u
         user_update.hashed_password = None
     if not user.name:
         user.name = None
+    if not user.surname:
+        user.surname = None
     await users_queries.update_user_data(user.login, user_update.name, user_update.hashed_password)
     return SuccessfullResponse()
 
-@users_router.get('/user/name', response_model=str)
-async def get_user_name(login: str = Depends(get_current_user)) -> str:
-    user_name = await users_queries.get_user_name(login)
+@users_router.get('/user/profile', response_model=User)
+async def get_user_name(login: str = Depends(get_current_user)) -> User:
+    user_name = await users_queries.get_user_profile(login)
+    user_name = format_record(user_name, User)
     return user_name

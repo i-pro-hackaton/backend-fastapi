@@ -23,6 +23,7 @@ class User(BaseModel):
     id: int = Field(None, title='ID пользователя')
     login: str = Field(None, title='Логин пользователя')
     name: str = Field(None, title='Имя пользователя')
+    surname: str = Field(None, title='Фамилия пользователя')
     hashed_password: str = Field(None, title='Хеш пароля пользователя')
 
 class Item(BaseModel):

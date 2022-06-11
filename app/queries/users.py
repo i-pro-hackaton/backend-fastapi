@@ -15,15 +15,15 @@ async def add_user(name: str,surname: str,login: str, password: str) -> None:
         raise InternalServerError(e) from e
 
 
-async def get_user_name(login: str) -> str:
-    sql = """ SELECT id,name
+async def get_user_profile(login: str) -> (str,str):
+    sql = """ SELECT id,name,surname
               FROM users
               WHERE login = $1"""
     try:
         result = await DB.fetchrow(sql, login)
         if not result:
             raise NotFoundException('Пользователь не найден')
-        return result['name']
+        return result
     except PostgresError as e:
         raise InternalServerError(e) from e
 
