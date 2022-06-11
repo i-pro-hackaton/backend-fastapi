@@ -46,6 +46,7 @@ async def common_exception_handler(request: Request, exception: CommonException)
     )
 app.include_router(users_router)
 app.include_router(teams_router)
+app.include_router(tasks_router)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,

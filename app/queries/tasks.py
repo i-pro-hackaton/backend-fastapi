@@ -3,12 +3,12 @@ from asyncpg import Record
 from asyncpg.exceptions import UniqueViolationError, PostgresError, ForeignKeyViolationError
 from app.db.db import DB
 from app.exceptions import BadRequest, NotFoundException, ForbiddenException, InternalServerError
-
+import hashlib
 async def add_task(login: str,
                    name: str,
                    description: str,
                    task_type: str,
-                   image_url: str,
+                   image: str,
                    company_name: str,
                    start_date: datetime,
                    end_date: datetime) -> None:
@@ -16,7 +16,7 @@ async def add_task(login: str,
              FROM users
              WHERE login = $1"""
     user_id = None
-    user_id = await DB.fecthval(sql, login)
+    user_id = await DB.fetchval(sql, login)
     if not user_id:
         raise BadRequest('Пользователя не существует')
     sql = """INSERT INTO companies(name)
@@ -32,26 +32,29 @@ async def add_task(login: str,
     company_id = await DB.fetchval(sql, company_name)
     if not company_id:
         raise BadRequest('Компании не существует')
+    data = image.file.read()
+    fname = f'static/{hashlib.sha224(data).hexdigest()}.png'
+    with open(fname, mode='wb+') as f:
+        f.write(data)
     sql = """INSERT INTO tasks(name,
                                description,
                                task_type,
                                image_url,
                                company_id,
-                               owner_id
+                               owner_id,
                                start_date,
                                end_date)
-             (SELECT $1,$2,$3,$4,companies.name,$5,$6
-             FROM companies
-             WHERE companies.name = $7)"""
+             VALUES ($1,$2,$3,$4,$5,$6,$7,$8)"""
     try:
         await DB.execute(sql,
                          name,
                          description,
                          task_type,
-                         image_url,
+                         fname,
+                         company_id,
+                         user_id,
                          start_date,
-                         end_date,
-                         company_name)
+                         end_date)
     except ForeignKeyViolationError as e:
         raise NotFoundException('Компании не существует') from e
 
@@ -60,7 +63,7 @@ async def get_tasks_by_user(login: str) -> list[Record]:
              FROM users
              WHERE login = $1"""
     user_id = None
-    user_id = await DB.execute(sql, login)
+    user_id = await DB.fetchval(sql, login)
     if not user_id:
         raise BadRequest('Пользователя не существует')
     sql = """SELECT t.name, t.description, t.task_type, 
@@ -69,14 +72,14 @@ async def get_tasks_by_user(login: str) -> list[Record]:
              FROM tasks as t JOIN users_tasks as ut
              ON t.id = ut.task_id
              WHERE ut.user_id = $1"""
-    await DB.fetch(sql, user_id)
+    return await DB.fetch(sql, user_id)
 
 async def get_tasks_by_teams(team_name: str) -> list[Record]:
     sql = """SELECT id
              FROM teams
              WHERE name = $1"""
     team_id = None
-    team_id = await DB.execute(sql, team_name)
+    team_id = await DB.fetchval(sql, team_name)
     if not team_id:
         raise BadRequest('Пользователя не существует')
     sql = """SELECT t.name, t.description, t.task_type, 
@@ -92,22 +95,22 @@ async def get_tasks_owned(login: str) -> list[Record]:
              FROM users
              WHERE login = $1"""
     user_id = None
-    user_id = await DB.execute(sql, login)
+    user_id = await DB.fetchval(sql, login)
     if not user_id:
         raise BadRequest('Пользователя не существует')
     sql = """SELECT name, description, task_type, 
                     image_url, company_id, owner_id,
                     start_date, end_date
              FROM tasks
-             WHERE tasks.owned_id = $1"""
-    await DB.fetch(sql, user_id)
+             WHERE tasks.owner_id = $1"""
+    return await DB.fetch(sql, user_id)
 
 async def connect_users_tasks(login: str, task_id: int) -> None:
         sql = """SELECT id
                  FROM users
                  WHERE login = $1"""
         user_id = None
-        user_id = await DB.execute(sql, login)
+        user_id = await DB.fetchval(sql, login)
         if not user_id:
             raise BadRequest('Пользователя не существует')
         sql = """INSERT INTO users_tasks(user_id, task_id, completed)
@@ -131,7 +134,7 @@ async def connect_teams_tasks(team_name: str, task_id: int ) -> None:
              FROM teams
              WHERE name = $1"""
     team_id = None
-    team_id = await DB.execute(sql, team_name)
+    team_id = await DB.fetchval(sql, team_name)
     if not team_id:
         raise BadRequest('Комманды не существует')
     sql = """INSERT INTO teams_tasks(team_id, task_id, completed)

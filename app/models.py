@@ -45,7 +45,6 @@ class TaskIn(BaseModel):
     name: str = Field(..., title='Имя мероприятия')
     description: str = Field(None, title='Описание мероприятия')
     task_type: str = Field(None, title='Тип мероприятия')
-    image: UploadFile = File(default=None)
     company_name: str = Field(None, title='Имя компании')
     owner_id: int = Field(None, title='ID создателя')
     start_date: datetime = Field(None, title='Дата начала мероприятия')

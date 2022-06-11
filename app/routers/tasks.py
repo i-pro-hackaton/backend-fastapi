@@ -1,6 +1,6 @@
-from datetime import timedelta
+from datetime import timedelta, datetime
 
-from fastapi import APIRouter, HTTPException, status, Form
+from fastapi import APIRouter, HTTPException, status,UploadFile, File, Form
 from fastapi.param_functions import Depends
 from fastapi.security import OAuth2PasswordRequestForm
 
@@ -17,30 +17,39 @@ tasks_router = APIRouter(tags=["Tasks"])
 
 
 @tasks_router.post('/task', response_model=SuccessfullResponse)
-async def add_team(task: TaskIn,login: str = Depends(get_current_user)) -> SuccessfullResponse:
-    await teams_queries.add_team(login,
-                                 task.name,
-                                 task.description,
-                                 task.task_type,
-                                 task.image_url,
-                                 task.company_name,
-                                 task.start_date,
-                                 task.end_date)
+async def add_tasks(
+    name: str = Form(..., title='Имя мероприятия'),
+    description: str = Form(None, title='Описание мероприятия'),
+    task_type: str = Form(None, title='Тип мероприятия'),
+    company_name: str = Form(None, title='Имя компании'),
+    start_date: datetime = Form(None, title='Дата начала мероприятия'),
+    end_date: datetime = Form(None, title='Дата окончания мероприятия'),
+
+ image: UploadFile = File(default=None),login: str = Depends(get_current_user)) -> SuccessfullResponse:
+
+    await tasks_queries.add_task(login,
+                                 name,
+                                 description,
+                                 task_type,
+                                 image,
+                                 company_name,
+                                 start_date,
+                                 end_date)
     return SuccessfullResponse()
 
 @tasks_router.post("/user/task", response_model=SuccessfullResponse)
 async def connect_users_tasks(team: Team,login: str = Depends(get_current_user)) -> SuccessfullResponse:
-    await teams_queries.connect_users_teams(login,team.name)
+    await tasks_queries.connect_users_teams(login,team.name)
     return SuccessfullResponse()
 
 @tasks_router.delete("/user/task", response_model=SuccessfullResponse)
 async def disconnect_users_tasks(task: Team, task_id: TaskID, login: str = Depends(get_current_user)) -> SuccessfullResponse:
-    await teams_queries.disconnect_users_tasks(team.name,task_id.id, login)
+    await tasks_queries.disconnect_users_tasks(team.name,task_id.id, login)
     return SuccessfullResponse()
 
 @tasks_router.delete("/team/task", response_model=SuccessfullResponse)
 async def disconnect_teams_tasks(task: Team, task_id: TaskID, login: str = Depends(get_current_user)) -> SuccessfullResponse:
-    await teams_queries.disconnect_teams_tasks(team.name,task_id.id, login)
+    await tasks_queries.disconnect_teams_tasks(team.name,task_id.id, login)
     return SuccessfullResponse()
 
 @tasks_router.get("/user/task/owned", response_model=list[TaskOut])

@@ -71,3 +71,20 @@ create table if not exists companies
 	id serial primary key,
 	name text not null unique
 );
+create table if not exists skills
+(
+	id serial primary key,
+	name text	
+);
+create table if not exists users_skills
+(
+	id serial primary key,
+	skill_id integer references skills(id),
+	user_id integer references users(id)	
+);
+create table if not exists favourites
+(
+	id serial primary key,
+	owner_id integer references users(id),
+	fav_id integer references users(id)	
+);
