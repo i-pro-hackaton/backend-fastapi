@@ -4,11 +4,11 @@ from app.db.db import DB
 from app.exceptions import BadRequest, NotFoundException, InternalServerError
 
 
-async def add_user(name: str,login: str, password: str) -> None:
-    sql = """  INSERT INTO users(name,login,hashed_password)
-               VALUES ($1,$2,$3)"""
+async def add_user(name: str,surname: str,login: str, password: str) -> None:
+    sql = """  INSERT INTO users(name,surname,login,hashed_password)
+               VALUES ($1,$2,$3,$4)"""
     try:
-        await DB.execute(sql, name, login, password)
+        await DB.execute(sql, name,surname, login, password)
     except UniqueViolationError as e:
         raise BadRequest('Пользователь с таким логином уже существует') from e
     except PostgresError as e:
