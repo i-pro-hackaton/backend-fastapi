@@ -98,7 +98,7 @@ async def get_tasks_owned(login: str) -> list[Record]:
     user_id = await DB.fetchval(sql, login)
     if not user_id:
         raise BadRequest('Пользователя не существует')
-    sql = """SELECT name, description, task_type, 
+    sql = """SELECT id,name, description, task_type, 
                     image_url, company_id, owner_id,
                     start_date, end_date
              FROM tasks

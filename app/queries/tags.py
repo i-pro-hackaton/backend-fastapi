@@ -39,6 +39,7 @@ async def search_tasks(tags: list, search_query: str) -> list[Record]:
     tasks_ids_tags = set()
     if search_query:
         prepared_query = prepare_search_query(search_query)
+        print(prepared_query)
         if len(prepared_query) <= 2:
             raise BadRequest('Короткий запрос')
         sql = """SELECT id

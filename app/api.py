@@ -43,7 +43,7 @@ async def common_exception_handler(request: Request, exception: CommonException)
         )
     return JSONResponse(
         status_code=exception.code,
-        content={'detatils': exception.error}
+        content={'details': exception.error}
     )
 app.include_router(users_router)
 app.include_router(teams_router)

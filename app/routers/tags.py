@@ -21,7 +21,7 @@ tags_router = APIRouter(tags=["Tags"])
 
 @tags_router.post('/task/tag', response_model=SuccessfullResponse)
 async def connect_tags_tasks(tag: str, task_id: TaskID) -> SuccessfullResponse:
-    await tags_router.connect_tags_tasks(tag, task_id.id)
+    await tags_queries.connect_tags_tasks(tag, task_id.id)
     return SuccessfullResponse()
 
 @tags_router.delete('/task/tag', response_model=SuccessfullResponse)
