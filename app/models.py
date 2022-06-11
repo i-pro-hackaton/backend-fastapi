@@ -27,6 +27,9 @@ class User(BaseModel):
     name: str = Field(None, title='Имя пользователя')
     surname: str = Field(None, title='Фамилия пользователя')
     hashed_password: str = Field(None, title='Хеш пароля пользователя')
+    date_of_birth: datetime = Field(None, title='Дата рождения')
+    email: str = Field(None, title='Email')
+    phone: str = Field(None, title='Телефон (формат любой)')
 
 class Team(BaseModel):
     name: str = Field(..., title='Имя команды')

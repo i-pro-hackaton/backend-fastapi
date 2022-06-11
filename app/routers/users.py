@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 from fastapi import APIRouter, HTTPException, status, Form
 from fastapi.param_functions import Depends
@@ -17,11 +17,11 @@ users_router = APIRouter(tags=["Users"])
 
 
 @users_router.post('/registration')
-async def registration_user(name: str = Form(...), surname: str = Form(...),request: OAuth2PasswordRequestForm = Depends()) -> dict:
+async def registration_user(name: str = Form(...), surname: str = Form(...), date_of_birth: datetime = Form(...), email: str = Form(...), phone: str = Form(...),request: OAuth2PasswordRequestForm = Depends()) -> dict:
     if len(request.password) < 8 or request.password.isdigit():
         raise BadRequest('Слабый пароль')
     request.password = get_password_hash(request.password)
-    await users_queries.add_user(name,surname,request.username,request.password)
+    await users_queries.add_user(name,surname,request.username,request.password, date_of_birth, email, phone)
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": request.username}, expires_delta=access_token_expires
