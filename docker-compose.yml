@@ -1,0 +1,31 @@
+version: '3.7'
+services:
+  db:
+    image: postgres
+    build:
+      context: .
+      dockerfile: ./docker/db/Dockerfile
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    ports:
+      - ":5432"
+    environment:
+      - POSTGRES_USER=postgres2
+      - POSTGRES_PASSWORD=12345678
+      - POSTGRES_DB=postgres
+  web:
+    build:
+      context: .
+      dockerfile: ./docker/web/Dockerfile
+    volumes:
+      - .:/code2
+    ports:
+      - "8087:8087"
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgresql://postgres2:12345678@db:5432/postgres
+      - SERVER_PORT=8087
+      - SECRET_KEY=09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7
+      - ALGORITHM=HS256
+      - ACCESS_TOKEN_EXPIRE_MINUTES=600
