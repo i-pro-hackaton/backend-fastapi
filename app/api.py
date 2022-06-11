@@ -9,6 +9,7 @@ from app.db.db import DB
 from app.exceptions import CommonException, InternalServerError
 from app.routers.users import users_router
 from app.routers.teams import teams_router
+from app.routers.tasks import tasks_router
 
 origins = ["*"] # TODO: change it in bright future
 app = FastAPI(title='Hackaton backend')

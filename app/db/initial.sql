@@ -4,7 +4,10 @@ create table if not exists users
 	login text not null unique,
 	hashed_password text not null,
 	name text not null,
-	surname text not null
+	surname text not null,
+	date_of_birth timestamp not null,
+	email text not null,
+	phone text not null
 );
 create table if not exists teams
 (
@@ -29,6 +32,7 @@ create table if not exists tasks
 	task_type text,
 	image_url text,
 	company_id integer references companies(id) on delete set null,
+	owner_id integer references users(id) on delete set null,
 	start_date timestamp,
 	end_date timestamp
 );
