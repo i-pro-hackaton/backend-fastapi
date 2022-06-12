@@ -42,6 +42,12 @@ async def connect_users_tasks(task_id: TaskID,login: str = Depends(get_current_u
     await tasks_queries.connect_users_tasks(login,task_id.id)
     return SuccessfullResponse()
 
+@tasks_router.get('/task', response_model=list[TaskOut])
+async def get_task():
+    tasks = await tasks_queries.get_tasks()
+    tasks = format_records(tasks, TaskOut)
+    return tasks
+
 @tasks_router.delete("/user/task", response_model=SuccessfullResponse)
 async def disconnect_users_tasks(task_id: TaskID, login: str = Depends(get_current_user)) -> SuccessfullResponse:
     await tasks_queries.disconnect_users_tasks(task_id.id, login)

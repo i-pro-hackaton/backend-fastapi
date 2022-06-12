@@ -58,6 +58,10 @@ async def add_task(login: str,
     except ForeignKeyViolationError as e:
         raise NotFoundException('Компании не существует') from e
 
+async def get_tasks()-> list[Record]:
+    sql = """SELECT * from tasks"""
+    return await DB.fetch(sql)
+
 async def get_tasks_by_user(login: str) -> list[Record]:
     sql = """SELECT id
              FROM users
