@@ -70,10 +70,10 @@ async def get_tasks_by_user(login: str = Depends(get_current_user)) -> list[Task
     tasks = format_records(tasks, TaskOut)
     return tasks
       
-@tasks_router.get("/team/task", response_model=list[Team])
-async def get_teams(name: str) -> list[Team]:
+@tasks_router.get("/team/task", response_model=list[TaskOut])
+async def get_tasks_by_team(name: str) -> list[TaskOut]:
     teams = await tasks_queries.get_tasks_by_teams(name)
-    teams = format_records(teams, Team)
+    teams = format_records(teams, TaskOut)
     return teams
 
 @tasks_router.post('/user/task/completed', response_model=SuccessfullResponse)

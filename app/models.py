@@ -63,7 +63,8 @@ class TaskOut(BaseModel):
     owner_id: int = Field(None, title='ID создателя')
     start_date: datetime = Field(None, title='Дата начала мероприятия')
     end_date: datetime = Field(None, title='Дата окончания мероприятия')
-
+    completed: bool = Field(None, title='Завершенность мероприятия')
+    
 class Product(BaseModel):
     id: int = Field(None, title='ID продукта')
     name: str = Field(None, title='Имя продукта')

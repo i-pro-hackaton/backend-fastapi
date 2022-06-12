@@ -72,7 +72,7 @@ async def get_tasks_by_user(login: str) -> list[Record]:
         raise BadRequest('Пользователя не существует')
     sql = """SELECT t.name, t.description, t.task_type, 
                     t.image_url, t.company_id, t.owner_id,
-                    t.start_date, t.end_date
+                    t.start_date, t.end_date, ut.completed
              FROM tasks as t JOIN users_tasks as ut
              ON t.id = ut.task_id
              WHERE ut.user_id = $1"""
@@ -88,7 +88,7 @@ async def get_tasks_by_teams(team_name: str) -> list[Record]:
         raise BadRequest('Пользователя не существует')
     sql = """SELECT t.name, t.description, t.task_type, 
                     t.image_url, t.company_id, t.owner_id,
-                    t.start_date, t.end_date
+                    t.start_date, t.end_date, tt.completed
              FROM tasks as t JOIN teams_tasks as tt
              ON t.id = tt.task_id
              WHERE tt.team_id = $1"""
