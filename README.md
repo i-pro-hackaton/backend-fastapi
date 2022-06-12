@@ -74,6 +74,6 @@ docker compose up
 <!-- CONTACT -->
 ## Разработчики команды I PRO
 
-Backend разработчик - Голубев Егор - [@huscker](https://github.com/huscker)
+Backend разработчик - Голубев Егор - [@huscker](https://github.com/huscker) \
 Frontend, Mobile разработчик - Лебедева Татьяна - [@TaFo000](https://github.com/TaFo000)
 
