@@ -7,8 +7,7 @@ create table if not exists users
 	surname text not null,
 	date_of_birth timestamp not null,
 	email text not null,
-	phone text not null,
-	hours integer
+	phone text not null
 );
 create table if not exists teams
 (
@@ -98,4 +97,16 @@ create table if not exists products
 	description text,
 	image_url text,
 	price integer	
+);
+create table if not exists users_products
+(
+	id serial primary key,
+	user_id integer references users(id),
+	product_id integer references products(id)	
+);
+create table if not exists teams_products
+(
+	id serial primary key,
+	team_id integer references teams(id),
+	product_id integer references products(id)	
 );

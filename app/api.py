@@ -11,6 +11,7 @@ from app.routers.users import users_router
 from app.routers.teams import teams_router
 from app.routers.tasks import tasks_router
 from app.routers.tags import tags_router
+from app.routers.products import products_router
 
 origins = ["*"] # TODO: change it in bright future
 app = FastAPI(title='Hackaton backend')
@@ -49,6 +50,7 @@ app.include_router(users_router)
 app.include_router(teams_router)
 app.include_router(tasks_router)
 app.include_router(tags_router)
+app.include_router(products_router)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,

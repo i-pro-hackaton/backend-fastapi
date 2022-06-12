@@ -64,6 +64,13 @@ class TaskOut(BaseModel):
     start_date: datetime = Field(None, title='Дата начала мероприятия')
     end_date: datetime = Field(None, title='Дата окончания мероприятия')
 
+class Product(BaseModel):
+    id: int = Field(None, title='ID продукта')
+    name: str = Field(None, title='Имя продукта')
+    description: str = Field(None, title='Описание продукта')
+    image_url: str = Field(None, title='Ссылка на изображение')
+    price: int = Field(None, title='Цена в часах')
+
 class Item(BaseModel):
     name: str = Field(None, title='Имя предмета')
     description: str = Field(None, title='Описание предмета')

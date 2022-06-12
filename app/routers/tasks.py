@@ -38,13 +38,13 @@ async def add_tasks(
     return SuccessfullResponse()
 
 @tasks_router.post("/user/task", response_model=SuccessfullResponse)
-async def connect_users_tasks(team: Team,login: str = Depends(get_current_user)) -> SuccessfullResponse:
-    await tasks_queries.connect_users_teams(login,team.name)
+async def connect_users_tasks(task_id: TaskID,login: str = Depends(get_current_user)) -> SuccessfullResponse:
+    await tasks_queries.connect_users_tasks(login,task_id.id)
     return SuccessfullResponse()
 
 @tasks_router.delete("/user/task", response_model=SuccessfullResponse)
-async def disconnect_users_tasks(task: Team, task_id: TaskID, login: str = Depends(get_current_user)) -> SuccessfullResponse:
-    await tasks_queries.disconnect_users_tasks(team.name,task_id.id, login)
+async def disconnect_users_tasks(task_id: TaskID, login: str = Depends(get_current_user)) -> SuccessfullResponse:
+    await tasks_queries.disconnect_users_tasks(task_id.id, login)
     return SuccessfullResponse()
 
 @tasks_router.delete("/team/task", response_model=SuccessfullResponse)
@@ -65,8 +65,8 @@ async def get_tasks_by_user(login: str = Depends(get_current_user)) -> list[Task
     return tasks
       
 @tasks_router.get("/team/task", response_model=list[Team])
-async def get_teams(login: str = Depends(get_current_user)) -> list[Team]:
-    teams = await tasks_queries.get_tasks_by_team(login)
+async def get_teams(name: str) -> list[Team]:
+    teams = await tasks_queries.get_tasks_by_teams(name)
     teams = format_records(teams, Team)
     return teams
 
