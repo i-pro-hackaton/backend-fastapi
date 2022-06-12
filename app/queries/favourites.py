@@ -1,5 +1,5 @@
 from asyncpg import Record
-from asyncpg.exceptions import UniqueViolationError, PostgresError
+from asyncpg.exceptions import UniqueViolationError, PostgresError, ForeignKeyViolationError
 from app.db.db import DB
 from app.exceptions import BadRequest, NotFoundException, InternalServerError
 
@@ -17,7 +17,8 @@ async def add_favourite(task_id: int, login: str) -> None:
         await DB.execute(sql, user_id, task_id)
     except UniqueViolationError as e:
         raise BadRequest('Уже добавлено в избранное') from e
-
+    except ForeignKeyViolationError as e:
+        raise NotFoundException('Задания не существует') as e
 async def remove_favourite(task_id: int, login: str):
     sql = """SELECT id
              FROM users
