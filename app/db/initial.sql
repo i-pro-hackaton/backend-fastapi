@@ -86,9 +86,9 @@ create table if not exists users_skills
 create table if not exists favourites
 (
 	id serial primary key,
-	owner_id integer references users(id) on delete cascade,
-	fav_id integer references users(id) on delete cascade,
-	unique(owner_id,fav_id)	
+	user_id integer references users(id) on delete cascade,
+	task_id integer references tasks(id) on delete cascade,
+	unique(user_id,task_id)	
 );
 create table if not exists products
 (
