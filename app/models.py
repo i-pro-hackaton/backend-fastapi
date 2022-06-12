@@ -76,3 +76,7 @@ class Item(BaseModel):
     name: str = Field(None, title='Имя предмета')
     description: str = Field(None, title='Описание предмета')
     image_url: str = Field(None, title='Изображение')
+
+class Skill(BaseModel):
+    name: str = Field(None, title='Имя скилла')
+    count: int = Field(None, title='Количество скиллов')

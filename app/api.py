@@ -13,6 +13,7 @@ from app.routers.tasks import tasks_router
 from app.routers.tags import tags_router
 from app.routers.products import products_router
 from app.routers.favourites import favourites_router
+from app.routers.skills import skills_router
 
 origins = ["*"] # TODO: change it in bright future
 app = FastAPI(title='Hackaton backend')
@@ -53,6 +54,7 @@ app.include_router(tasks_router)
 app.include_router(tags_router)
 app.include_router(products_router)
 app.include_router(favourites_router)
+app.include_router(skills_router)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
