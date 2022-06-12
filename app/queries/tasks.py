@@ -70,7 +70,7 @@ async def get_tasks_by_user(login: str) -> list[Record]:
     user_id = await DB.fetchval(sql, login)
     if not user_id:
         raise BadRequest('Пользователя не существует')
-    sql = """SELECT t.name, t.description, t.task_type, 
+    sql = """SELECT t.id,t.name, t.description, t.task_type, 
                     t.image_url, t.company_id, t.owner_id,
                     t.start_date, t.end_date, ut.completed
              FROM tasks as t JOIN users_tasks as ut
@@ -86,7 +86,7 @@ async def get_tasks_by_teams(team_name: str) -> list[Record]:
     team_id = await DB.fetchval(sql, team_name)
     if not team_id:
         raise BadRequest('Пользователя не существует')
-    sql = """SELECT t.name, t.description, t.task_type, 
+    sql = """SELECT t.id,t.name, t.description, t.task_type, 
                     t.image_url, t.company_id, t.owner_id,
                     t.start_date, t.end_date, tt.completed
              FROM tasks as t JOIN teams_tasks as tt
