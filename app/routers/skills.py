@@ -6,7 +6,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 
 import app.queries.users as users_queries
 import app.queries.skills as skills_queries
-from app.models import SuccessfullResponse, Skill, User
+from app.models import SuccessfullResponse, Skill,SkillUser,  User
 from app.auth.hash import get_password_hash, verify_password
 from app.auth.jwt_token import create_access_token
 from app.auth.oauth2 import get_current_user
@@ -27,11 +27,11 @@ async def remove_skill_from_user(name: str,login: str = Depends(get_current_user
     await skills_queries.remove_skill_from_user(name,login)
     return SuccessfullResponse()
 
-@skills_router.get("/user/skill", response_model=Skill)
-async def get_user_skills(login: str = Depends(get_current_user)) -> Skill:
-    skill = await skills_queries.get_user_skills(login)
-    skill = format_record(skill, Skill)
-    return skill
+@skills_router.get("/user/skill", response_model=list[SkillUser])
+async def get_user_skills(login: str = Depends(get_current_user)) -> list[SkillUser]:
+    skills = await skills_queries.get_user_skills(login)
+    skills = format_records(skills, SkillUser)
+    return skills
 
 @skills_router.get("/team/skill", response_model=list[Skill])
 async def get_team_skills(name: str) -> list[Skill]:

@@ -17,10 +17,18 @@ async def add_skill_to_user(name: str, login: str) -> None:
     skill_id = await DB.fetchval(sql, name)
     if not skill_id:
         raise InternalServerError('хз')
+    sql = """SELECT id
+             FROM users
+             WHERE login = $1"""
+    user_id = None
+    user_id = await DB.fetchval(sql, login)
+    if not user_id:
+        raise NotFoundException('Пользователь не найден')
     sql = """INSERT INTO
-             users_skills(skill_id, user_id)"""
+             users_skills(skill_id, user_id)
+             VALUES ($1,$2)"""
     try:
-        await DB.execute(sql, name)
+        await DB.execute(sql, skill_id, user_id)
     except UniqueViolationError as e:
         raise BadRequest("Скилл уже добавлен")
 
@@ -52,7 +60,7 @@ async def get_user_skills(login: str) -> list[Record]:
     user_id = await DB.fetchval(sql, login)
     if not user_id:
         raise NotFoundException('Пользователь не найден')
-    sql = """SELECT s.name, 1 as count
+    sql = """SELECT s.name
              FROM skills as s
              JOIN users_skills as us
              ON us.skill_id = s.id

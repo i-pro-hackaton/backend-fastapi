@@ -80,3 +80,6 @@ class Item(BaseModel):
 class Skill(BaseModel):
     name: str = Field(None, title='Имя скилла')
     count: int = Field(None, title='Количество скиллов')
+
+class SkillUser(BaseModel):
+    name: str = Field(..., title='Имя команды')
