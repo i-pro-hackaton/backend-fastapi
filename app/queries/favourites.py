@@ -18,7 +18,7 @@ async def add_favourite(task_id: int, login: str) -> None:
     except UniqueViolationError as e:
         raise BadRequest('Уже добавлено в избранное') from e
     except ForeignKeyViolationError as e:
-        raise NotFoundException('Задания не существует') as e
+        raise NotFoundException('Задания не существует') from e
 async def remove_favourite(task_id: int, login: str):
     sql = """SELECT id
              FROM users
