@@ -33,6 +33,26 @@ async def connect_users_teams(login: str, name: str) -> None:
     except UniqueViolationError as e:
         raise BadRequest('Пользователь уже принадлежит команде')
 
+async def disconnect_users_teams(login: str, name: str) -> None:
+    sql = """SELECT id
+             FROM users
+             WHERE login = $1"""
+    user_id = None
+    user_id = await DB.fetchval(sql, login)
+    if not user_id:
+        raise NotFoundException('Пользователь не найден')
+    sql = """SELECT id
+             FROM teams
+             WHERE name = $1"""
+    team_id = None
+    team_id = await DB.fetchval(sql, name)
+    if not team_id:
+        raise NotFoundException('Команда не найдена')
+    sql = """DELETE FROM users_teams
+             WHERE user_id = $1
+               AND team_id = $2"""
+    await DB.execute(sql,user_id, team_id)
+
 async def get_teams_by_login(login: str) -> list[Record]:
     sql = """SELECT id 
              FROM users
@@ -48,3 +68,17 @@ async def get_teams_by_login(login: str) -> list[Record]:
              WHERE ut.user_id = $1"""
     return await DB.fetch(sql, user_id)
 
+async def get_team_members(name: str) -> list[Record]:
+    sql = """SELECT id
+             FROM teams
+             WHERE name = $1"""
+    team_id = None
+    team_id = await DB.fetchval(sql, name)
+    if not team_id:
+        raise NotFoundException('Команда не найдена')
+    sql = """SELECT name,surname
+             FROM users as u
+             JOIN users_teams as ut
+             ON u.id = ut.user_id
+             WHERE ut.team_id = $1"""
+    return await DB.fetch(sql,team_id)  

@@ -33,3 +33,14 @@ async def get_teams(login: str = Depends(get_current_user)) -> list[Team]:
     teams = await teams_queries.get_teams_by_login(login)
     teams = format_records(teams, Team)
     return teams
+
+@teams_router.delete("/user/team", response_model=SuccessfullResponse)
+async def disconnect_users_teams(name: str, login: str = Depends(get_current_user)) -> SuccessfullResponse:
+    await teams_queries.disconnect_users_teams(login,name)
+    return SuccessfullResponse()
+
+@teams_router.get('/team', response_model=list[User])
+async def get_team_members(name: str):
+    users = await teams_queries.get_team_members(name)
+    users = format_records(users, User)
+    return users 
